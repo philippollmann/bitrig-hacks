@@ -5,6 +5,7 @@ import SwiftUI
 /// playlists, and toggle how aggressively the music adapts.
 struct MusicSetupView: View {
   @Bindable var music: MusicController
+  @Environment(\.dismiss) private var dismiss
 
   var body: some View {
     NavigationStack {
@@ -21,6 +22,11 @@ struct MusicSetupView: View {
       }
       .navigationTitle("Adaptive Music")
       .navigationBarTitleDisplayMode(.inline)
+      .toolbar {
+        ToolbarItem(placement: .confirmationAction) {
+          Button("Done") { dismiss() }
+        }
+      }
     }
   }
 

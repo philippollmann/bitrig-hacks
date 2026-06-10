@@ -10,7 +10,7 @@ struct ContentView: View {
   @State private var sheetPresented = true
 
   /// Collapsed height of the pull-up sheet; the camera stays interactive above it.
-  private let collapsedHeight: CGFloat = 220
+  private let collapsedHeight: CGFloat = 300
 
   var body: some View {
     WorkoutView(tracker: tracker, camera: camera, coach: coach, session: session)
