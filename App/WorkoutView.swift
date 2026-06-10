@@ -4,6 +4,8 @@ import SwiftUI
 struct WorkoutView: View {
   var tracker: PoseTracker
   var camera: CameraManager
+  var coach: Coach
+  var session: WorkoutSession
 
   var body: some View {
     ZStack {
@@ -29,6 +31,9 @@ struct WorkoutView: View {
   private var overlayUI: some View {
     VStack(spacing: 14) {
       counter
+      if let line = coach.lastLine, session.isActive {
+        coachLine(line)
+      }
       Spacer()
       if !tracker.isTracking {
         coachingBanner
@@ -63,6 +68,18 @@ struct WorkoutView: View {
     .padding(.horizontal, 28)
     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
     .sensoryFeedback(.increase, trigger: tracker.count)
+  }
+
+  private func coachLine(_ line: String) -> some View {
+    Label(line, systemImage: "waveform")
+      .font(.callout.weight(.semibold))
+      .foregroundStyle(.white)
+      .multilineTextAlignment(.leading)
+      .padding(.horizontal, 16)
+      .padding(.vertical, 12)
+      .glassEffect(in: .capsule)
+      .transition(.move(edge: .top).combined(with: .opacity))
+      .animation(.snappy, value: line)
   }
 
   private var coachingBanner: some View {
