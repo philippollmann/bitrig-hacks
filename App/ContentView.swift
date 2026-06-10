@@ -19,7 +19,9 @@ struct ContentView: View {
           .presentationDetents([.height(collapsedHeight), .large])
           .presentationBackgroundInteraction(.enabled(upThrough: .height(collapsedHeight)))
           .presentationDragIndicator(.visible)
-          .presentationBackground(.regularMaterial)
+          .presentationBackground {
+            Color.clear.glassEffect(in: .rect)
+          }
           .interactiveDismissDisabled()
       }
       // Workout intensity adapts the music, but only during an active workout.
