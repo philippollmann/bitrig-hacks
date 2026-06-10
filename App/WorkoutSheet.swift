@@ -1,35 +1,42 @@
 import SwiftUI
 
 /// The pull-up sheet that replaces the tab bar. The now-playing bar stays
-/// pinned on top; below it the user swipes between the workout controls and
-/// the music settings pages.
+/// pinned on top with the workout controls below; adaptive-music settings open
+/// from a toolbar button.
 struct WorkoutSheet: View {
   var tracker: PoseTracker
   var session: WorkoutSession
   var music: MusicController
 
-  @State private var page = 0
   @State private var showNowPlaying = false
+  @State private var showMusicSetup = false
 
   var body: some View {
-    VStack(spacing: 10) {
-      MiniPlayerView(music: music) { showNowPlaying = true }
-        .padding(.vertical, 8)
-        .glassEffect(in: .capsule)
-        .padding(.horizontal, 12)
-        .padding(.top, 4)
+    NavigationStack {
+      VStack(spacing: 10) {
+        MiniPlayerView(music: music) { showNowPlaying = true }
+          .padding(.vertical, 8)
+          .glassEffect(in: .capsule)
+          .padding(.horizontal, 12)
 
-      TabView(selection: $page) {
         WorkoutControlsView(tracker: tracker, session: session)
-          .tag(0)
-        MusicSetupView(music: music)
-          .tag(1)
       }
-      .tabViewStyle(.page(indexDisplayMode: .always))
-      .indexViewStyle(.page(backgroundDisplayMode: .interactive))
+      .navigationBarTitleDisplayMode(.inline)
+      .toolbar {
+        ToolbarItem(placement: .topBarTrailing) {
+          Button {
+            showMusicSetup = true
+          } label: {
+            Label("Adaptive Music", systemImage: "music.note.list")
+          }
+        }
+      }
     }
     .sheet(isPresented: $showNowPlaying) {
       NowPlayingView(music: music)
+    }
+    .sheet(isPresented: $showMusicSetup) {
+      MusicSetupView(music: music)
     }
   }
 }
