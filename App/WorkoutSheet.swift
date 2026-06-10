@@ -7,6 +7,7 @@ struct WorkoutSheet: View {
   var tracker: PoseTracker
   var session: WorkoutSession
   var music: MusicController
+  @Binding var showMusicSetup: Bool
 
   @State private var showNowPlaying = false
   @State private var showMusicSetup = false
@@ -19,18 +20,7 @@ struct WorkoutSheet: View {
           .glassEffect(in: .capsule)
           .padding(.horizontal, 12)
 
-        WorkoutControlsView(tracker: tracker, session: session)
-      }
-      .navigationBarTitleDisplayMode(.inline)
-      .toolbar {
-        ToolbarItem(placement: .topBarTrailing) {
-          Button {
-            showMusicSetup = true
-          } label: {
-            Label("Adaptive Music", systemImage: "music.note.list")
-          }
-        }
-      }
+      WorkoutControlsView(tracker: tracker, session: session)
     }
     .sheet(isPresented: $showNowPlaying) {
       NowPlayingView(music: music)

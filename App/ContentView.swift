@@ -8,14 +8,31 @@ struct ContentView: View {
   @State private var session = WorkoutSession()
   @State private var coach = Coach()
   @State private var sheetPresented = true
+  @State private var showMusicSetup = false
 
   /// Collapsed height of the pull-up sheet; the camera stays interactive above it.
   private let collapsedHeight: CGFloat = 300
 
   var body: some View {
-    WorkoutView(tracker: tracker, camera: camera, coach: coach, session: session)
+    NavigationStack {
+      WorkoutView(tracker: tracker, camera: camera, coach: coach, session: session)
+        .toolbar {
+          ToolbarItem(placement: .topBarTrailing) {
+            Button {
+              showMusicSetup = true
+            } label: {
+              Label("Music Setup", systemImage: "music.note.list")
+                .labelStyle(.iconOnly)
+                .frame(width: 44, height: 44)
+                .glassEffect(in: .circle)
+            }
+            .buttonStyle(.plain)
+          }
+        }
+        .toolbarBackground(.hidden, for: .navigationBar)
+      }
       .sheet(isPresented: $sheetPresented) {
-        WorkoutSheet(tracker: tracker, session: session, music: music)
+        WorkoutSheet(tracker: tracker, session: session, music: music, showMusicSetup: $showMusicSetup)
           .presentationDetents([.height(collapsedHeight), .large])
           .presentationBackgroundInteraction(.enabled(upThrough: .height(collapsedHeight)))
           .presentationDragIndicator(.visible)
