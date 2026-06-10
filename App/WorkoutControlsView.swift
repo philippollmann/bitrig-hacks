@@ -40,9 +40,11 @@ struct WorkoutControlsView: View {
         .tint(.secondary)
       }
       .padding(.horizontal, 20)
-      .padding(.bottom, 28)
+      .padding(.bottom, 8)
     }
     .scrollBounceBehavior(.basedOnSize)
+    // Keep content clear of the floating page-indicator dots and sheet edge.
+    .contentMargins(.bottom, 44, for: .scrollContent)
   }
 
   private var paceLabel: String {
