@@ -8,15 +8,19 @@ struct WorkoutControlsView: View {
   var body: some View {
     ScrollView {
       VStack(spacing: 18) {
+        header
+
         // Live stats — refreshed continuously while the workout runs.
         TimelineView(.periodic(from: .now, by: 0.3)) { _ in
           HStack(spacing: 0) {
             stat(label: "TIME", value: session.formattedElapsed, tint: .primary)
             divider
-            stat(label: tracker.exercise.repNoun.uppercased(), value: "\(tracker.count)", tint: .primary)
+            stat(label: tracker.exercise.repNoun.uppercased(), value: "\(tracker.count)", tint: tracker.exercise.accent)
             divider
             stat(label: paceLabel, value: "\(Int(tracker.pace.rounded()))", tint: tracker.tempo.color)
           }
+          .padding(.vertical, 14)
+          .background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 22, style: .continuous))
         }
 
         startStopButton
@@ -30,9 +34,9 @@ struct WorkoutControlsView: View {
         .disabled(session.isActive)
 
         Button {
-          tracker.reset()
+          withAnimation(.bouncy) { tracker.reset() }
         } label: {
-          Label("Reset Reps", systemImage: "arrow.counterclockwise")
+          Label("Start Over", systemImage: "arrow.counterclockwise")
             .frame(maxWidth: .infinity)
             .padding(.vertical, 6)
         }
@@ -51,21 +55,41 @@ struct WorkoutControlsView: View {
 
   // MARK: - Pieces
 
+  /// A peppy title that shows the workout's vibe.
+  private var header: some View {
+    HStack(spacing: 10) {
+      Image(systemName: tracker.exercise.symbol)
+        .font(.title2.weight(.bold))
+        .foregroundStyle(tracker.exercise.accent)
+        .symbolEffect(.bounce, value: session.isActive)
+      Text(session.isActive ? tracker.exercise.hypeName : "Ready to Move?")
+        .font(.system(.title2, design: .rounded).weight(.heavy))
+        .contentTransition(.opacity)
+      Spacer()
+    }
+    .animation(.bouncy, value: session.isActive)
+  }
+
   private var startStopButton: some View {
     Button {
-      withAnimation(.snappy) { toggle() }
+      withAnimation(.bouncy) { toggle() }
     } label: {
       HStack(spacing: 12) {
         Image(systemName: session.isActive ? "stop.fill" : "play.fill")
           .font(.title3)
-        Text(session.isActive ? "End Workout" : "Start Workout")
-          .font(.headline)
+          .symbolEffect(.bounce, value: session.isActive)
+        Text(session.isActive ? "Finish Up" : "Let's Move!")
+          .font(.system(.headline, design: .rounded).weight(.heavy))
       }
       .foregroundStyle(.white)
       .frame(maxWidth: .infinity)
-      .padding(.vertical, 16)
-      .background((session.isActive ? Color.red : Color.green).gradient,
-                  in: Capsule())
+      .padding(.vertical, 17)
+      .background(
+        (session.isActive ? AnyShapeStyle(Color.red.gradient)
+                          : AnyShapeStyle(tracker.exercise.accent.gradient)),
+        in: Capsule())
+      .shadow(color: (session.isActive ? .red : tracker.exercise.accent).opacity(0.5),
+              radius: 12, y: 4)
     }
     .buttonStyle(.plain)
     .sensoryFeedback(.impact(weight: .medium), trigger: session.isActive)
@@ -74,11 +98,12 @@ struct WorkoutControlsView: View {
   private func stat(label: String, value: String, tint: Color) -> some View {
     VStack(spacing: 4) {
       Text(value)
-        .font(.system(size: 30, weight: .bold, design: .rounded))
+        .font(.system(size: 30, weight: .heavy, design: .rounded))
         .monospacedDigit()
         .foregroundStyle(tint)
+        .contentTransition(.numericText())
       Text(label)
-        .font(.caption2.weight(.semibold))
+        .font(.caption2.weight(.bold))
         .foregroundStyle(.secondary)
     }
     .frame(maxWidth: .infinity)
