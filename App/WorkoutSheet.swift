@@ -7,18 +7,12 @@ struct WorkoutSheet: View {
   var tracker: PoseTracker
   var session: WorkoutSession
   var music: MusicController
+  @Binding var showNowPlaying: Bool
 
   @State private var page = 0
-  @State private var showNowPlaying = false
 
   var body: some View {
-    VStack(spacing: 10) {
-      MiniPlayerView(music: music) { showNowPlaying = true }
-        .padding(.vertical, 8)
-        .glassEffect(in: .capsule)
-        .padding(.horizontal, 12)
-        .padding(.top, 4)
-
+    VStack(spacing: 0) {
       TabView(selection: $page) {
         WorkoutControlsView(tracker: tracker, session: session)
           .tag(0)
